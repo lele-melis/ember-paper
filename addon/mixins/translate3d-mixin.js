@@ -82,26 +82,28 @@ export default Mixin.create({
       parent = '#ember-testing';
     }
 
-    document.querySelector(parent).parentNode.appendChild(containerClone);
+    if(parent) {
+      document.querySelector(parent).parentNode.appendChild(containerClone);
 
-    let toStyle = this.toTransformCss(this.calculateZoomToOrigin(this.element, this.get('defaultedCloseTo')));
+      let toStyle = this.toTransformCss(this.calculateZoomToOrigin(this.element, this.get('defaultedCloseTo')));
 
-    let origin = typeof this.get('origin') === 'string'
-      ? document.querySelector(this.get('origin'))
-      : this.get('origin');
+      let origin = typeof this.get('origin') === 'string'
+        ? document.querySelector(this.get('origin'))
+        : this.get('origin');
 
-    nextTick().then(() => {
-      dialogClone.classList.remove('md-transition-in');
-      dialogClone.classList.add('md-transition-out');
-      dialogClone.style.cssText = toStyle;
       nextTick().then(() => {
-        run.later(() => {
-          containerClone.parentNode.removeChild(containerClone);
-          this.onTranslateToEnd(origin);
+        dialogClone.classList.remove('md-transition-in');
+        dialogClone.classList.add('md-transition-out');
+        dialogClone.style.cssText = toStyle;
+        nextTick().then(() => {
+          run.later(() => {
+            containerClone.parentNode.removeChild(containerClone);
+            this.onTranslateToEnd(origin);
 
-        }, computeTimeout(dialogClone) || 0);
+          }, computeTimeout(dialogClone) || 0);
+        });
       });
-    });
+    }
   },
 
   /**
